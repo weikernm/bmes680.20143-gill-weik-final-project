@@ -1,0 +1,8 @@
+In this folder place files that will be used to build the document,
+especially the following:
+- source code for listings
+- source code for generating figures
+- images for figures generated from outside the build
+
+The rationale for this is that nothing in here will be mentioned by
+gitignore.
