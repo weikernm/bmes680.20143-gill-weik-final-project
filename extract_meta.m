@@ -7,9 +7,14 @@ function metadata = extract_meta(headers, regex, tok_no)
         end
         headers = headers_string;
     end
-    [mat, tok] = regexp(headers, regex, 'match', 'tokens');
+    [~, tok] = regexp(headers, regex, 'match', 'tokens');
     metadata = cell(size(tok));
     for i = 1:numel(tok)
-        metadata{i} = tok{i}{1}{tok_no};
+        if numel(tok{i}) < 1
+            metadata(i) = {'Missing data'};
+        else
+            metadata(i) = tok{i}{1}(tok_no);
+        end
+        % disp(i)
     end
 end
