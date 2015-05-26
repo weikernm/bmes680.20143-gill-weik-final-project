@@ -10,6 +10,7 @@ elseif ~exist('gsedata', 'var')
     gsedata=geoseriesread('GSE44772.txt');
     disp('done!')
 else
+    disp('Skipping download, reload of gene expression data')
 end
 
 if ~exist('genes.txt','file')
@@ -23,6 +24,7 @@ elseif ~exist('genes', 'var')
     genes=geosoftread('genes.txt');
     disp('done!')
 else
+    disp('Skipping download, reload of platform data')
 end
 
 %% filter data
