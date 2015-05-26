@@ -56,7 +56,7 @@ stacked_data = zeros(3*n_gene, numel(subj_id_unique));
 for i = 1:numel(subj_id_unique)
     datarows = Filtdata(:, strcmp(subj_id, subj_id_unique(i)));
     for j = 1:3
-        stacked_data(((j-1)*n_gene+1):j*n_gene) = ...
+        stacked_data(((j-1)*n_gene+1):j*n_gene, i) = ...
             datarows(:, j);
     end
 end
