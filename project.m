@@ -31,6 +31,8 @@ gene=genes.Data;
 [Fmask,Filtdata]=geneentropyfilter(Fdata,'Percentile',30);
 
 %% Extract metadata
+
+% Extract subject ids and tissue type.
 reg_title = '(\d*)_(.*)';
 [mat, tok] = regexp(gsedata.Header.Samples.title, reg_title, ...
     'match', 'tokens');
@@ -40,6 +42,9 @@ for i = 1:numel(tok)
     subj_id{i} = tok{i}{1}{1};
     tissue_type{i} = tok{i}{1}{2};
 end
+
+% Extract disease state.
+reg_disease = 'disease status: (.*)';
 
 %% Find unique subject ids.
 subj_id_unique = unique(subj_id);
