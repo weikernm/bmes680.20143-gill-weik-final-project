@@ -33,8 +33,8 @@ gene=genes.Data;
 [mask,Fdata] = genelowvalfilter(expvalues,'absval',log2(2));
 [Fmask,fildata]=geneentropyfilter(Fdata,'Percentile',30);
 [h,p]=ttest(fildata');
-ID=find(p<0.001);
-%Filtdata=fildata(ID,:);
+Filtdata=fildata(p<0.001,:);
+
 %% Extract metadata
 
 % Extract subject ids and tissue type.
