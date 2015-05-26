@@ -34,17 +34,13 @@ gene=genes.Data;
 
 % Extract subject ids and tissue type.
 reg_title = '(\d*)_(.*)';
-[mat, tok] = regexp(gsedata.Header.Samples.title, reg_title, ...
-    'match', 'tokens');
-subj_id = cell(size(tok));
-tissue_type = cell(size(tok));
-for i = 1:numel(tok)
-    subj_id{i} = tok{i}{1}{1};
-    tissue_type{i} = tok{i}{1}{2};
-end
+subj_id = extract_meta(gsedata.Header.Samples.title, reg_title, 1);
+tissue_type = extract_meta(gsedata.Header.Samples.title, reg_title, 2);
 
 % Extract disease state.
-reg_disease = 'disease status: (.*)';
+% reg_disease = 'disease status: (.*)';
+% disease_state = extract_meta(...
+%     gsedata.Header.Samples.characteristics_ch2(4,:), reg_disease, 1);
 
 %% Find unique subject ids.
 subj_id_unique = unique(subj_id);
