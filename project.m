@@ -43,9 +43,9 @@ subj_id = extract_meta(gsedata.Header.Samples.title, reg_title, 1);
 tissue_type = extract_meta(gsedata.Header.Samples.title, reg_title, 2);
 
 % Extract disease state.
-% reg_disease = 'disease status: (.*)';
-% disease_state = extract_meta(...
-%     gsedata.Header.Samples.characteristics_ch2(4,:), reg_disease, 1);
+reg_disease = 'disease status: (.*)';
+disease_state = extract_meta(...
+    gsedata.Header.Samples.characteristics_ch2(4,:), reg_disease, 1);
 
 %% Find unique subject ids.
 subj_id_unique = unique(subj_id);
