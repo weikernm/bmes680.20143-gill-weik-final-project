@@ -46,6 +46,15 @@ tissue_type = extract_meta(gsedata.Header.Samples.title, reg_title, 2);
 reg_disease = 'disease status: (.*)';
 disease_state = extract_meta(...
     gsedata.Header.Samples.characteristics_ch2(4,:), reg_disease, 1);
+% Extract age.
+reg_age = 'age: (\d*)';
+age = str2double(extract_meta(...
+    gsedata.Header.Samples.characteristics_ch2(1,:), ...
+    reg_age, 1));
+% Extract gender.
+reg_gender = 'gender: ([MF])';
+gender = extract_meta( gsedata.Header.Samples.characteristics_ch2(3,:), ...
+    reg_gender, 1);
 
 %% Find unique subject ids.
 subj_id_unique = unique(subj_id);

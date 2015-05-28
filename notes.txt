@@ -1,0 +1,7 @@
+For clustering genes together, use k-means rather than hierarchical
+clustering.
+Use decision tree classifier.
+When we do PCA, color samples by disease state, and by classification using
+trees or k-means.
+We can also do a correlation study between age and genes.
+There is also a 3rd party hierarchical clustering toolbox available.
