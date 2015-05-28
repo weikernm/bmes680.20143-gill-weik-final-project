@@ -62,4 +62,18 @@ for i = 1:numel(subj_id_unique)
 end
 
 %% heirarchical clustering
-% use clustergram
+opts=statset('Display','final');
+[idx,ctrs]=kmeans(stacked_data,2,'Options',opts);
+silhouette(stacked_data,idx)
+figure
+plot(stacked_data(idx==1,1),stacked_data(idx==1,2),'r.','MarkerSize',12)
+hold on
+plot(stacked_data(idx==2,1),stacked_data(idx==2,2),'b.','MarkerSize',12)
+plot(ctrs(:,1),ctrs(:,2),'kx',...
+     'MarkerSize',12,'LineWidth',2)
+plot(ctrs(:,1),ctrs(:,2),'ko',...
+     'MarkerSize',12,'LineWidth',2)
+legend('Cluster 1','Cluster 2','Centroids',...
+       'Location','NW')
+hold off
+title('K-means Clustering of Samples');
