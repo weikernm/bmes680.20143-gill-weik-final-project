@@ -28,12 +28,12 @@ else
 end
 
 %% filter data
-expvalues=gsedata.Data;
-gene=genes.Data;
+expvalues = gsedata.Data;
+gene = genes.Data;
 [mask,Fdata] = genelowvalfilter(expvalues,'absval',log2(2));
-[Fmask,fildata]=geneentropyfilter(Fdata,'Percentile',30);
-[h,p]=ttest(fildata');
-Filtdata=fildata(p<0.001,:);
+[Fmask,fildata] = geneentropyfilter(Fdata,'Percentile',30);
+[h,p] = ttest(fildata');
+Filtdata = fildata(p<0.001,:);
 
 %% Extract metadata
 
@@ -71,8 +71,8 @@ for i = 1:numel(subj_id_unique)
 end
 
 %% heirarchical clustering
-opts=statset('Display','final');
-[idx,ctrs]=kmeans(stacked_data,2,'Options',opts);
+opts = statset('Display','final');
+[idx,ctrs] = kmeans(stacked_data,2,'Options',opts);
 silhouette(stacked_data,idx)
 figure
 plot(stacked_data(idx==1,1),stacked_data(idx==1,2),'r.','MarkerSize',12)
@@ -86,3 +86,13 @@ legend('Cluster 1','Cluster 2','Centroids',...
        'Location','NW')
 hold off
 title('K-means Clustering of Samples');
+
+%% Seperate data into diseased and control groups
+for i = 1:length(subj_id_unique)
+   unique_id(i) = str2num(cell2mat(subj_id_unique(i))); 
+end
+grps=disease_state(unique_id);
+disease_control_tree = fitctree(stacked_data',grps');
+resuberror = resubLoss(disease_control_tree)
+figure
+view(disease_control_tree,'Mode','graph')
