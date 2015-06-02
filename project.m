@@ -93,7 +93,7 @@ title('K-means Clustering of Samples');
 
 %% Seperate data into diseased and control groups
 for i = 1:length(subj_id_unique)
-   unique_id(i) = str2num(cell2mat(subj_id_unique(i))); 
+   unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
 end
 grps=disease_state(unique_id);
 disease_control_tree = fitctree(stacked_data',grps');
