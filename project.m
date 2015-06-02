@@ -31,9 +31,13 @@ end
 expvalues = gsedata.Data;
 gene = genes.Data;
 [mask,Fdata] = genelowvalfilter(expvalues,'absval',log2(2));
+gene = gene(mask, :);
 [Fmask,fildata] = geneentropyfilter(Fdata,'Percentile',30);
+gene = gene(Fmask, :);
 [h,p] = ttest(fildata');
-Filtdata = fildata(p<0.001,:);
+i_sigp = p<0.001;
+Filtdata = fildata(i_sigp,:);
+gene = gene(i_sigp, :);
 
 %% Extract metadata
 
@@ -70,7 +74,7 @@ for i = 1:numel(subj_id_unique)
     end
 end
 
-%% heirarchical clustering
+%% k-means clustering
 opts = statset('Display','final');
 [idx,ctrs] = kmeans(stacked_data,2,'Options',opts);
 silhouette(stacked_data,idx)
