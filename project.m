@@ -38,6 +38,7 @@ gene = gene(Fmask, :);
 i_sigp = p<0.001;
 Filtdata = fildata(i_sigp,:);
 gene = gene(i_sigp, :);
+[~, n_genetypes] = size(gene);
 
 %% Extract metadata
 
@@ -66,6 +67,13 @@ subj_id_unique = unique(subj_id);
 
 %% Stack data from 3 brain regions.
 stacked_data = zeros(3*n_gene, numel(subj_id_unique));
+stacked_genes = cell(3*n_gene, n_genetypes);
+stacked_tissue = cell(3*n_gene, 1);
+tissue_type_unique = unique(tissue_type);
+for j = 1:3
+     stacked_tissue(((j-1)*n_gene+1):j*n_gene) = tissue_type_unique(j);
+     stacked_genes(((j-1)*n_gene+1):j*n_gene, :) = gene;
+end
 for i = 1:numel(subj_id_unique)
     datarows = Filtdata(:, strcmp(subj_id, subj_id_unique(i)));
     for j = 1:3
