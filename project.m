@@ -38,9 +38,9 @@ gene = gene(Fmask, :);
 i_sigp = p<0.001;
 Filtdata = fildata(i_sigp,:);
 gene = gene(i_sigp, :);
-i_nonan = sum(isnan(Filtdata), 1) == 0;
-Filtdata = Filtdata(i_nonan,:);
-gene = gene(i_nonan, :);
+%i_nonan = sum(isnan(Filtdata), 1) == 0;
+%Filtdata = Filtdata(i_nonan,:);
+%gene = gene(i_nonan, :);
 [~, n_genetypes] = size(gene);
 
 %% Extract metadata
@@ -87,34 +87,72 @@ end
 
 %% k-means clustering
 opts = statset('Display','final');
-[coeff, score, latent]=pca(stacked_data);
-[idx,ctrs] = kmeans(stacked_data,2,'Options',opts);
-silhouette(stacked_data,idx)
+[coeff, score, latent,~,explained,~]=pca(stacked_data');
+[idx,ctrs] = kmeans(stacked_data',2,'Options',opts);
+ctrsindx=ctrs*coeff;
 figure
-plot(stacked_data(idx==1,1),stacked_data(idx==1,2),'r.','MarkerSize',12)
+plot(score(idx==1,1),score(idx==1,2),'r.','MarkerSize',12)
 hold on
-plot(stacked_data(idx==2,1),stacked_data(idx==2,2),'b.','MarkerSize',12)
-plot(ctrs(:,1),ctrs(:,2),'kx',...
+plot(score(idx==2,1),score(idx==2,2),'b.','MarkerSize',12)
+%hold on
+%plot(score(idx==3,1),score(idx==3,2),'k.','MarkerSize',12)
+hold on
+plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
      'MarkerSize',12,'LineWidth',2)
-plot(ctrs(:,1),ctrs(:,2),'ko',...
+plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
      'MarkerSize',12,'LineWidth',2)
 legend('Cluster 1','Cluster 2','Centroids',...
        'Location','NW')
 hold off
 title('K-means Clustering of Samples');
-
-%% Seperate data into diseased and control groups
+%% Cluster by disease and age
 for i = 1:length(subj_id_unique)
    unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
 end
 grps=disease_state(unique_id);
-disease_control_tree = fitctree(stacked_data',grps');
+disease_state=strcmp(grps,'normal');
+figure
+plot(score(disease_state==1,1),score(disease_state==1,2),'r.','MarkerSize',12)
+hold on
+plot(score(disease_state==0,1),score(disease_state==0,2),'b.','MarkerSize',12)
+hold on
+plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
+     'MarkerSize',12,'LineWidth',2)
+plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
+     'MarkerSize',12,'LineWidth',2)
+legend('Normal','Alzeihmer''s Disease','Centroids',...
+       'Location','NW')
+age_unique=age(unique_id);
+[decsage,decageindx]=sort(age_unique);
+diseaseage=disease_state(decageindx);
+colorVec=winter(5);
+group=repmat([1 2 3 4 5], 46, 1);
+scoreage=score(decageindx,:);
+figure
+for i=1:230
+    if diseaseage(1,i)==1
+norm=plot(scoreage(i,1),scoreage(i,2),'*','Color',colorVec(group(i),:),'MarkerSize',12)
+    else 
+alz=plot(scoreage(i,1),scoreage(i,2),'o','Color',colorVec(group(i),:),'MarkerSize',12)
+    end
+hold on
+end
+ plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
+     'MarkerSize',12,'LineWidth',2)
+plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
+     'MarkerSize',12,'LineWidth',2)
+legend([norm,alz],'Normal','Alzheimer''s disease','Centroids',...
+       'Location','NW')
+   title('Correlation between Age and Disease')
+    hold off;
+ hold off;
+%% Seperate data into diseased and control groups
+disease_control_tree = fitctree(stacked_data',grps','MaxCat',2);
 resuberror = resubLoss(disease_control_tree)
 view(disease_control_tree,'Mode','graph')
 
 %% Correlate age and genes
 % From tree genes: 6487 (1st level), 3273 & 2090 (second level)
-age_unique=age(unique_id);
 stacked_matrix=[age_unique;stacked_data];
 NM_182612=[stacked_matrix(1,:);stacked_matrix(6487,:)];
 idless_NM_182612=find(NM_182612(2,:)<0.0340865);
