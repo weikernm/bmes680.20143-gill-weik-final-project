@@ -5,3 +5,15 @@ When we do PCA, color samples by disease state, and by classification using
 trees or k-means.
 We can also do a correlation study between age and genes.
 There is also a 3rd party hierarchical clustering toolbox available.
+
+At this point (2015-06-04), we have:
+* a working classification tree that may furnish interesting biomarkers
+* correlation p-values and coefficients for features with age and disease
+* k-means clustering which seems to closely correlate with disease
+
+TODO:
+* age colored PCA scatter plot
+* quantify how well k-means clustering correlates with disease
+* look at the differences between lists of genes that correlate with age in
+  alzheimers vs. those which do so in normals
+* perhaps look into hierarchical clustering of samples
