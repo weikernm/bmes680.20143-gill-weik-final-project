@@ -108,11 +108,30 @@ for i = 1:length(subj_id_unique)
    unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
 end
 grps=disease_state(unique_id);
+age_unique=age(unique_id);
 disease_control_tree = fitctree(stacked_data',grps');
 resuberror = resubLoss(disease_control_tree)
 view(disease_control_tree,'Mode','graph')
 
-%% Correlate age and genes
+%% Correlate age, alzheimers, and genes
+
+% Assumes that missing data are normal.
+disease_score = zeros(size(grps));
+disease_score(strcmp(grps, 'Alzheimer''s disease')) = 1;
+disease_score(strcmp(grps, 'normal')) = 0;
+R_alz = zeros(n_feature, 1);
+R_age = zeros(n_feature, 1);
+P_alz = zeros(n_feature, 1);
+P_age = zeros(n_feature, 1);
+for i = 1:n_feature
+   [R_alz_i, P_alz_i] = corrcoef(disease_score, stacked_data(i, :));
+   [R_age_i, P_age_i] = corrcoef(age_unique(~isnan(age_unique)), ...
+      stacked_data(i, ~isnan(age_unique)));
+   R_alz(i) = R_alz_i(2);
+   R_age(i) = R_age_i(2);
+   P_alz(i) = P_alz_i(2);
+   P_age(i) = P_age_i(2);
+end
 % From tree genes: 6487 (1st level), 3273 & 2090 (second level)
 age_unique=age(unique_id);
 stacked_matrix=[age_unique;stacked_data];
