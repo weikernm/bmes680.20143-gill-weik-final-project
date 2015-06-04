@@ -106,5 +106,25 @@ end
 grps=disease_state(unique_id);
 disease_control_tree = fitctree(stacked_data',grps');
 resuberror = resubLoss(disease_control_tree)
-figure
 view(disease_control_tree,'Mode','graph')
+
+%% Correlate age and genes
+% From tree genes: 6487 (1st level), 3273 & 2090 (second level)
+age_unique=age(unique_id);
+stacked_matrix=[age_unique;stacked_data];
+NM_182612=[stacked_matrix(1,:);stacked_matrix(6487,:)];
+idless_NM_182612=find(NM_182612(2,:)<0.0340865);
+idgreater_NM_182612=find(NM_182612(2,:)>=0.0340865);
+agelessexp_NM_182612=mean(NM_182612(1,idless_NM_182612))
+agegreaterexp_NM_182612=nanmean(NM_182612(1,idgreater_NM_182612))
+NM_152434=[stacked_matrix(1,:);stacked_matrix(3273,:)];
+idless_NM_152434=find(NM_152434(2,:)<0.310279);
+idgreater_NM_152434=find(NM_152434(2,:)>=0.317279);
+agelessexp_NM_152434=mean(NM_152434(1,idless_NM_182612))
+agegreaterexp_NM_152434=nanmean(NM_152434(1,idgreater_NM_182612))
+AI026670=[stacked_matrix(1,:);stacked_matrix(2090,:)];
+idless_AI026670=find(NM_152434(2,:)<-0.0297704);
+idgreater_NM_152434=find(NM_152434(2,:)>=-0.0297704);
+agelessexp_NM_152434=mean(stacked_matrix(1,idless_NM_182612))
+agegreaterexp_NM_152434=nanmean(stacked_matrix(1,idgreater_NM_182612))
+
