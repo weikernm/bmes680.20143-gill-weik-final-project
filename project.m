@@ -115,11 +115,11 @@ view(disease_control_tree,'Mode','graph')
 % From tree genes: 6487 (1st level), 3273 & 2090 (second level)
 age_unique=age(unique_id);
 stacked_matrix=[age_unique;stacked_data];
-NM_182612=[stacked_matrix(1,:);stacked_matrix(6487,:)];
-idless_NM_182612=find(NM_182612(2,:)<0.0340865);
-idgreater_NM_182612=find(NM_182612(2,:)>=0.0340865);
-agelessexp_NM_182612=mean(NM_182612(1,idless_NM_182612))
-agegreaterexp_NM_182612=nanmean(NM_182612(1,idgreater_NM_182612))
+NM_182612=stacked_data(6487,:);
+idless_NM_182612=NM_182612<0.0340865;
+idgreater_NM_182612=NM_182612>=0.0340865;
+agelessexp_NM_182612=nanmean(age_unique(idless_NM_182612))
+agegreaterexp_NM_182612=nanmean(age_unique(idgreater_NM_182612))
 NM_152434=[stacked_matrix(1,:);stacked_matrix(3273,:)];
 idless_NM_152434=find(NM_152434(2,:)<0.310279);
 idgreater_NM_152434=find(NM_152434(2,:)>=0.317279);
