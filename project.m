@@ -131,9 +131,9 @@ scoreage=score(decageindx,:);
 figure
 for i=1:230
     if diseaseage(1,i)==1
-norm=plot(scoreage(i,1),scoreage(i,2),'*','Color',colorVec(group(i),:),'MarkerSize',12)
+norm=plot(scoreage(i,1),scoreage(i,2),'*','Color',colorVec(group(i),:),'MarkerSize',12);
     else 
-alz=plot(scoreage(i,1),scoreage(i,2),'o','Color',colorVec(group(i),:),'MarkerSize',12)
+alz=plot(scoreage(i,1),scoreage(i,2),'o','Color',colorVec(group(i),:),'MarkerSize',12);
     end
 hold on
 end
