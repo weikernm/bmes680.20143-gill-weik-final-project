@@ -87,6 +87,7 @@ end
 
 %% k-means clustering
 opts = statset('Display','final');
+[coeff, score, latent]=pca(stacked_data);
 [idx,ctrs] = kmeans(stacked_data,2,'Options',opts);
 silhouette(stacked_data,idx)
 figure
