@@ -133,21 +133,8 @@ for i = 1:n_feature
    P_age(i) = P_age_i(2);
 end
 % From tree genes: 6487 (1st level), 3273 & 2090 (second level)
-age_unique=age(unique_id);
-stacked_matrix=[age_unique;stacked_data];
-NM_182612=stacked_data(6487,:);
-idless_NM_182612=NM_182612<0.0340865;
-idgreater_NM_182612=NM_182612>=0.0340865;
-agelessexp_NM_182612=nanmean(age_unique(idless_NM_182612))
-agegreaterexp_NM_182612=nanmean(age_unique(idgreater_NM_182612))
-NM_152434=[stacked_matrix(1,:);stacked_matrix(3273,:)];
-idless_NM_152434=find(NM_152434(2,:)<0.310279);
-idgreater_NM_152434=find(NM_152434(2,:)>=0.317279);
-agelessexp_NM_152434=mean(NM_152434(1,idless_NM_182612))
-agegreaterexp_NM_152434=nanmean(NM_152434(1,idgreater_NM_182612))
-AI026670=[stacked_matrix(1,:);stacked_matrix(2090,:)];
-idless_AI026670=find(NM_152434(2,:)<-0.0297704);
-idgreater_NM_152434=find(NM_152434(2,:)>=-0.0297704);
-agelessexp_NM_152434=mean(stacked_matrix(1,idless_NM_182612))
-agegreaterexp_NM_152434=nanmean(stacked_matrix(1,idgreater_NM_182612))
-
+% NM_182612=stacked_data(6487,:);
+% idless_NM_182612=NM_182612<0.0340865;
+% idgreater_NM_182612=NM_182612>=0.0340865;
+% agelessexp_NM_182612=nanmean(age_unique(idless_NM_182612))
+% agegreaterexp_NM_182612=nanmean(age_unique(idgreater_NM_182612))
