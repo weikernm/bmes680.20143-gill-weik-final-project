@@ -110,6 +110,7 @@ for i = 1:length(subj_id_unique)
    unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
 end
 grps=disease_state(unique_id);
+<<<<<<< HEAD
 disease_state=strcmp(grps,'normal');
 figure
 plot(score(disease_state==1,1),score(disease_state==1,2),'r.','MarkerSize',12)
@@ -169,4 +170,22 @@ idless_AI026670=find(NM_152434(2,:)<-0.0297704);
 idgreater_NM_152434=find(NM_152434(2,:)>=-0.0297704);
 agelessexp_NM_152434=mean(stacked_matrix(1,idless_NM_182612))
 agegreaterexp_NM_152434=nanmean(stacked_matrix(1,idgreater_NM_182612))
+
+% Assumes that missing data are normal.
+disease_score = zeros(size(grps));
+disease_score(strcmp(grps, 'Alzheimer''s disease')) = 1;
+disease_score(strcmp(grps, 'normal')) = 0;
+R_alz = zeros(n_feature, 1);
+R_age = zeros(n_feature, 1);
+P_alz = zeros(n_feature, 1);
+P_age = zeros(n_feature, 1);
+for i = 1:n_feature
+   [R_alz_i, P_alz_i] = corrcoef(disease_score, stacked_data(i, :));
+   [R_age_i, P_age_i] = corrcoef(age_unique(~isnan(age_unique)), ...
+      stacked_data(i, ~isnan(age_unique)));
+   R_alz(i) = R_alz_i(2);
+   R_age(i) = R_age_i(2);
+   P_alz(i) = P_alz_i(2);
+   P_age(i) = P_age_i(2);
+end
 
