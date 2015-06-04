@@ -38,6 +38,9 @@ gene = gene(Fmask, :);
 i_sigp = p<0.001;
 Filtdata = fildata(i_sigp,:);
 gene = gene(i_sigp, :);
+i_nonan = sum(isnan(Filtdata), 1) == 0;
+Filtdata = Filtdata(i_nonan,:);
+gene = gene(i_nonan, :);
 [~, n_genetypes] = size(gene);
 
 %% Extract metadata
