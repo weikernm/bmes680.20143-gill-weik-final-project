@@ -122,6 +122,7 @@ plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
      'MarkerSize',12,'LineWidth',2)
 legend('Normal','Alzeihmer''s Disease','Centroids',...
        'Location','NW')
+   title('Cluster by Disease State and PCA score')
 age_unique=age(unique_id);
 [decsage,decageindx]=sort(age_unique);
 diseaseage=disease_state(decageindx);
@@ -152,24 +153,6 @@ resuberror = resubLoss(disease_control_tree)
 view(disease_control_tree,'Mode','graph')
 
 %% Correlate age and genes
-% From tree genes: 6487 (1st level), 3273 & 2090 (second level)
-stacked_matrix=[age_unique;stacked_data];
-NM_182612=[stacked_matrix(1,:);stacked_matrix(6487,:)];
-idless_NM_182612=find(NM_182612(2,:)<0.0340865);
-idgreater_NM_182612=find(NM_182612(2,:)>=0.0340865);
-agelessexp_NM_182612=mean(NM_182612(1,idless_NM_182612))
-agegreaterexp_NM_182612=nanmean(NM_182612(1,idgreater_NM_182612))
-NM_152434=[stacked_matrix(1,:);stacked_matrix(3273,:)];
-idless_NM_152434=find(NM_152434(2,:)<0.310279);
-idgreater_NM_152434=find(NM_152434(2,:)>=0.317279);
-agelessexp_NM_152434=mean(NM_152434(1,idless_NM_182612))
-agegreaterexp_NM_152434=nanmean(NM_152434(1,idgreater_NM_182612))
-AI026670=[stacked_matrix(1,:);stacked_matrix(2090,:)];
-idless_AI026670=find(NM_152434(2,:)<-0.0297704);
-idgreater_NM_152434=find(NM_152434(2,:)>=-0.0297704);
-agelessexp_NM_152434=mean(stacked_matrix(1,idless_NM_182612))
-agegreaterexp_NM_152434=nanmean(stacked_matrix(1,idgreater_NM_182612))
-
 % Assumes that missing data are normal.
 Alz_score = zeros(size(grps));
 Norm_score = zeros(size(grps));
@@ -177,7 +160,7 @@ Alz_score(strcmp(grps, 'Alzheimer''s disease')) = 1;
 Norm_score(strcmp(grps, 'normal')) = 1 ;
 Norm_age=age_unique(Norm_score==1);
 Alz_age=age_unique(Alz_score==1);
-[~, n_feature]=size(grps);
+[n_feature,~]=size(stacked_genes);
 R_alz = zeros(n_feature, 1);
 R_norm = zeros(n_feature, 1);
 R_normage = zeros(n_feature, 1);
@@ -187,27 +170,21 @@ P_norm = zeros(n_feature, 1);
 P_normage = zeros(n_feature, 1);
 P_alzage = zeros(n_feature, 1);
 for i = 1:n_feature
-   [R_alz_i, P_alz_i] = corrcoef(Alz_score, stacked_data(i, :));
-   [R_norm_i, P_norm_i] = corrcoef(Norm_score, stacked_data(i, :));
-   [R_Norm_age_i, P_Norm_age_i] = corrcoef(Norm_age(~isnan(Norm_age)), ...
-      stacked_data(i, ~isnan(Norm_age)));
-     [R_Alz_age_i, P_Alz_age_i] = corrcoef(Alz_age(~isnan(Alz_age)), ...
-      stacked_data(i, ~isnan(Alz_age)));
+   [R_alz_i, P_alz_i] = corrcoef(Alz_score', stacked_data(i, :));
+   [R_norm_i, P_norm_i] = corrcoef(Norm_score', stacked_data(i, :));
+       [R_age_i, P_age_i] = corrcoef(age_unique(~isnan(age_unique))', ...
+      stacked_data(i, ~isnan(age_unique)));
    R_alz(i) = R_alz_i(2);
    R_norm(i) = R_norm_i(2);
-   R_normage(i) = R_Norm_age_i(2);
-   R_alzage(i) = R_Alz_age_i(2);
    P_alz(i) = P_alz_i(2);
    P_norm(i) = P_norm_i(2);
-   P_normage(i) = P_Norm_age_i(2);
-   P_alzage(i) = P_Alz_age_i(2);
+   P_age(i) = P_age_i(2);
 end
-
+Age_sigp= P_age<0.001;
 Alz_sigp = P_alz<0.001;
 Norm_sigp = P_norm<0.001;
-Agenorm_sigp = P_normage<0.001;
-Agealz_sigp = P_alzage<0.001;
-Agerelated=find(Age_sigp==1 & Norm_sigp==1);
-Alzrelated=find(Age_sigp==1 & Alz_sigp==1);
-Alz_gene = gene(Alz_sigp, :);
+Agerelated=find(Age_sigp'==1 & Norm_sigp==1);
+Alzrelated=find(Age_sigp'==1 & Alz_sigp==1);
+genediff=setdiff(Alzrelated,Agerelated);
+Age_Alz_genes=stacked_genes((genediff),4);
 
