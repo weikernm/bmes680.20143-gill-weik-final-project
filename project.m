@@ -182,9 +182,9 @@ for i = 1:n_feature
     P_norm(i) = P_norm_i(2);
     P_age(i) = P_age_i(2);
 end
-Age_sigp= P_age<0.001;
-Alz_sigp = P_alz<0.001;
-Norm_sigp = P_norm<0.001;
+Age_sigp= P_age<1e-6;
+Alz_sigp = P_alz<1e-6;
+Norm_sigp = P_norm<1e-6;
 Agerelated=find(Age_sigp & Norm_sigp);
 Alzrelated=find(Age_sigp & Alz_sigp);
 genediff=setdiff(Alzrelated,Agerelated);
