@@ -113,6 +113,11 @@ for i = 1:length(subj_id_unique)
 end
 grps=disease_state(unique_id);
 disease_state=strcmp(grps,'normal');
+%% Assess quality of K-means clustering.
+[R_alz_kmean, P_alz_kmean] = corrcoef( ...
+   disease_state(~isnan(idx)), idx(~isnan(idx)))
+
+%% Plot PCA colored by Alzheimer's.
 figure
 plot(score(disease_state==1,1),score(disease_state==1,2),'r.','MarkerSize',12)
 hold on
