@@ -78,15 +78,15 @@ for i = 1:numel(subj_id_unique)
 end
 
 %% filter data
-[mask,stacked_data] = genelowvalfilter(stacked_data,'absval',log2(2));
+[mask,stacked_data] = genevarfilter(stacked_data,'Percentile',30);
 stacked_genes = stacked_genes(mask, :);
 stacked_tissue = stacked_tissue(mask);
-[mask,stacked_data] = geneentropyfilter( ...
-   stacked_data,'Percentile',30);
-stacked_genes = stacked_genes(mask, :);
-stacked_tissue = stacked_tissue(mask);
-[h,p] = ttest(fildata');
-i_sigp = p<0.001;
+%[mask,stacked_data] = geneentropyfilter( ...
+%   stacked_data,'Percentile',30);
+%stacked_genes = stacked_genes(mask, :);
+%stacked_tissue = stacked_tissue(mask);
+[h,p] = ttest(stacked_data');
+i_sigp = p<1e-6;
 stacked_data = stacked_data(i_sigp,:);
 stacked_genes = stacked_genes(i_sigp, :);
 stacked_tissue = stacked_tissue(i_sigp);
@@ -211,3 +211,6 @@ n_age_alz_pfc = nnz(strcmp(Age_Alz_tissues, 'PFC'))
 n_age_alz_cr = nnz(strcmp(Age_Alz_tissues, 'CR'))
 n_age_alz_vc = nnz(strcmp(Age_Alz_tissues, 'VC'))
 
+%% Third party clustering
+addpath('/Users/nicoleweikert/Documents/MATLAB/Bioinformatics/bmes680.20143-gill-weik-final-project');
+fuzclu=fcm(stacked_data);
