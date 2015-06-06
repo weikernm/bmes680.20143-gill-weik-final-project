@@ -122,6 +122,8 @@ disease_state=strcmp(grps,'normal');
 %% Assess quality of K-means clustering.
 [R_alz_kmean, P_alz_kmean] = corrcoef( ...
    disease_state(~isnan(idx)), idx(~isnan(idx)))
+confmat = confusionmat(double(~disease_state(~isnan(idx))), ...
+   idx(~isnan(idx))-1)
 
 %% Plot PCA colored by Alzheimer's.
 figure
