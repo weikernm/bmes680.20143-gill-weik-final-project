@@ -196,4 +196,10 @@ Agerelated=find(Age_sigp' & Norm_sigp);
 Alzrelated=find(Age_sigp' & Alz_sigp);
 genediff=setdiff(Alzrelated,Agerelated);
 Age_Alz_genes=stacked_genes((genediff),4);
+Age_Alz_tissues = stacked_tissue(genediff);
+% Count the genes that belong to this set of ALZ but not age related by
+% brain region.
+n_age_alz_pfc = nnz(strcmp(Age_Alz_tissues, 'PFC'))
+n_age_alz_cr = nnz(strcmp(Age_Alz_tissues, 'CR'))
+n_age_alz_vc = nnz(strcmp(Age_Alz_tissues, 'VC'))
 
