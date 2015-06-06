@@ -85,7 +85,13 @@ stacked_tissue = stacked_tissue(mask);
 %   stacked_data,'Percentile',30);
 %stacked_genes = stacked_genes(mask, :);
 %stacked_tissue = stacked_tissue(mask);
-[h,p] = ttest(stacked_data');
+for i = 1:length(subj_id_unique)
+    unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
+end
+grps=disease_state(unique_id);
+slct_normal=strcmp(grps,'normal');
+slct_alz=strcmp(grps,'Alzheimer''s disease');
+[h,p] = ttest2(stacked_data(:, slct_normal)', stacked_data(:, slct_alz)');
 i_sigp = p<1e-6;
 stacked_data = stacked_data(i_sigp,:);
 stacked_genes = stacked_genes(i_sigp, :);
@@ -115,10 +121,6 @@ legend('Cluster 1','Cluster 2','Centroids',...
 hold off
 title('K-means Clustering of Samples');
 %% Cluster by disease and age
-for i = 1:length(subj_id_unique)
-    unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
-end
-grps=disease_state(unique_id);
 disease_state=strcmp(grps,'normal');
 %% Assess quality of K-means clustering.
 [R_alz_kmean, P_alz_kmean] = corrcoef( ...
