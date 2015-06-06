@@ -98,19 +98,11 @@ stacked_tissue = stacked_tissue(i_sigp);
 opts = statset('Display','final');
 [coeff, score, latent,~,explained,~]=pca(stacked_data');
 [idx,ctrs] = kmeans(stacked_data',2,'Options',opts);
-ctrsindx=ctrs*coeff;
 figure
 plot(score(idx==1,1),score(idx==1,2),'r.','MarkerSize',12)
 hold on
 plot(score(idx==2,1),score(idx==2,2),'b.','MarkerSize',12)
-%hold on
-%plot(score(idx==3,1),score(idx==3,2),'k.','MarkerSize',12)
-hold on
-plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
-     'MarkerSize',12,'LineWidth',2)
-plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
-     'MarkerSize',12,'LineWidth',2)
-legend('Cluster 1','Cluster 2','Centroids',...
+legend('Cluster 1','Cluster 2',...
        'Location','NW')
 hold off
 title('K-means Clustering of Samples');
@@ -129,13 +121,9 @@ figure
 plot(score(disease_state==1,1),score(disease_state==1,2),'r.','MarkerSize',12)
 hold on
 plot(score(disease_state==0,1),score(disease_state==0,2),'b.','MarkerSize',12)
-hold on
-plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
-     'MarkerSize',12,'LineWidth',2)
-plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
-     'MarkerSize',12,'LineWidth',2)
-legend('Normal','Alzeihmer''s Disease','Centroids',...
+legend('Normal','Alzheimer''s Disease',...
        'Location','NW')
+   hold off
 title('Cluster by Disease State and PCA score')
 age_unique=age(unique_id);
 [decsage,decageindx]=sort(age_unique);
@@ -154,14 +142,9 @@ for i=1:230
     end
     hold on
 end
-plot(ctrsindx(:,1),ctrsindx(:,2),'kx',...
-     'MarkerSize',12,'LineWidth',2)
-plot(ctrsindx(:,1),ctrsindx(:,2),'ko',...
-     'MarkerSize',12,'LineWidth',2)
-legend([norm,alz],'Normal','Alzheimer''s disease','Centroids',...
+legend([norm,alz],'Normal','Alzheimer''s disease',...
        'Location','NW')
 title('Correlation between Age and Disease')
-hold off;
 hold off;
 %% Seperate data into diseased and control groups
 disease_control_tree = fitctree(stacked_data',grps','MaxCat',2);
@@ -170,8 +153,6 @@ view(disease_control_tree,'Mode','graph')
 
 %% Correlate age and genes
 % Assumes that missing data are normal.
-% Alz_score = zeros(size(grps));
-% Norm_score = zeros(size(grps));
 Alz_score = strcmp(grps, 'Alzheimer''s disease');
 Norm_score = strcmp(grps, 'normal');
 Norm_age=age_unique(Norm_score);
@@ -180,11 +161,9 @@ Alz_age=age_unique(Alz_score);
 R_alz = zeros(n_feature, 1);
 R_norm = zeros(n_feature, 1);
 R_age = zeros(n_feature, 1);
-% R_alzage = zeros(n_feature, 1);
 P_alz = zeros(n_feature, 1);
 P_norm = zeros(n_feature, 1);
 P_age = zeros(n_feature, 1);
-% P_alzage = zeros(n_feature, 1);
 for i = 1:n_feature
     [R_alz_i, P_alz_i] = corrcoef(Alz_score', stacked_data(i, :));
     [R_norm_i, P_norm_i] = corrcoef(Norm_score', stacked_data(i, :));
