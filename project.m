@@ -170,35 +170,41 @@ Alz_age=age_unique(Alz_score);
 [n_feature,~]=size(stacked_genes);
 R_alz = zeros(n_feature, 1);
 R_norm = zeros(n_feature, 1);
-R_age = zeros(n_feature, 1);
 P_alz = zeros(n_feature, 1);
 P_norm = zeros(n_feature, 1);
-P_age = zeros(n_feature, 1);
 for i = 1:n_feature
-    [R_alz_i, P_alz_i] = corrcoef(Alz_score', stacked_data(i, :));
-    [R_norm_i, P_norm_i] = corrcoef(Norm_score', stacked_data(i, :));
-    [R_age_i, P_age_i] = corrcoef(age_unique(~isnan(age_unique))', ...
-        stacked_data(i, ~isnan(age_unique)));
+    slct_samps = ~isnan(age_unique) & ~isnan(stacked_data(i, :));
+    slct_alz = slct_samps & Alz_score;
+    slct_norm = slct_samps & Norm_score;
+    [R_alz_i, P_alz_i] = corrcoef(age_unique(slct_alz), ...
+       stacked_data(i, slct_alz));
+    [R_norm_i, P_norm_i] = corrcoef(age_unique(slct_norm), ...
+       stacked_data(i, slct_norm));
     R_alz(i) = R_alz_i(2);
     R_norm(i) = R_norm_i(2);
     P_alz(i) = P_alz_i(2);
     P_norm(i) = P_norm_i(2);
-    P_age(i) = P_age_i(2);
 end
-Age_sigp= P_age<1e-6;
 Alz_sigp = P_alz<1e-6;
 Norm_sigp = P_norm<1e-6;
-Agerelated=find(Age_sigp & Norm_sigp);
-Alzrelated=find(Age_sigp & Alz_sigp);
-genediff=setdiff(Alzrelated,Agerelated);
-Age_Alz_genes_table = extract_gene_info(gene_table, stacked_genes(genediff));
+% Normrelated=find(Age_sigp & Norm_sigp);
+% Alzrelated=find(Age_sigp & Alz_sigp);
+genediff1=Alz_sigp & ~Norm_sigp;
+genediff2=Norm_sigp & ~Alz_sigp;
+Age_Alz_genes_table = extract_gene_info(gene_table, stacked_genes(genediff1));
+Age_Norm_genes_table = extract_gene_info(gene_table, stacked_genes(genediff2));
 Age_Alz_genes=Age_Alz_genes_table(:, 4);
-Age_Alz_tissues = stacked_tissue(genediff);
+Age_Norm_genes=Age_Norm_genes_table(:, 4);
+Age_Alz_tissues = stacked_tissue(genediff1);
+Age_Norm_tissues = stacked_tissue(genediff2);
 % Count the genes that belong to this set of ALZ but not age related by
 % brain region.
 n_age_alz_pfc = nnz(strcmp(Age_Alz_tissues, 'PFC'))
 n_age_alz_cr = nnz(strcmp(Age_Alz_tissues, 'CR'))
 n_age_alz_vc = nnz(strcmp(Age_Alz_tissues, 'VC'))
+n_age_norm_pfc = nnz(strcmp(Age_Norm_tissues, 'PFC'))
+n_age_norm_cr = nnz(strcmp(Age_Norm_tissues, 'CR'))
+n_age_norm_vc = nnz(strcmp(Age_Norm_tissues, 'VC'))
 
 %% Third party clustering
 addpath('/Users/nicoleweikert/Documents/MATLAB/Bioinformatics/bmes680.20143-gill-weik-final-project');
