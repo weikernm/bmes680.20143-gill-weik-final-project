@@ -1,3 +1,5 @@
+%% Close existing windows
+close all
 %% Download the data if necessary.
 if ~exist('GSE44772.txt','file')
     % Only download data from net if file not already in directory.
