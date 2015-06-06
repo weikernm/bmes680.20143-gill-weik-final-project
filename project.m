@@ -29,22 +29,6 @@ else
     disp('Skipping download, reload of platform data')
 end
 
-%% filter data
-expvalues = gsedata.Data;
-gene = genes.Data;
-[mask,Fdata] = genelowvalfilter(expvalues,'absval',log2(2));
-gene = gene(mask, :);
-[Fmask,fildata] = geneentropyfilter(Fdata,'Percentile',30);
-gene = gene(Fmask, :);
-[h,p] = ttest(fildata');
-i_sigp = p<0.001;
-Filtdata = fildata(i_sigp,:);
-gene = gene(i_sigp, :);
-%i_nonan = sum(isnan(Filtdata), 1) == 0;
-%Filtdata = Filtdata(i_nonan,:);
-%gene = gene(i_nonan, :);
-[~, n_genetypes] = size(gene);
-
 %% Extract metadata
 
 % Extract subject ids and tissue type.
@@ -68,24 +52,47 @@ gender = extract_meta( gsedata.Header.Samples.characteristics_ch2(3,:), ...
 
 %% Find unique subject ids.
 subj_id_unique = unique(subj_id);
-[n_gene, ~] = size(Filtdata);
+
+%% Stack data
+gene_table = genes.Data;
+% [n_gene, n_genetypes] = size(gene);
+expvalues = gsedata.Data;
+gene_id = rownames(expvalues);
+n_gene = numel(gene_id);
 
 %% Stack data from 3 brain regions.
 stacked_data = zeros(3*n_gene, numel(subj_id_unique));
-stacked_genes = cell(3*n_gene, n_genetypes);
+stacked_genes = cell(3*n_gene, 1);
 stacked_tissue = cell(3*n_gene, 1);
-tissue_type_unique = unique(tissue_type);
+tissue_type_unique = {'CR', 'PFC', 'VC'};
 for j = 1:3
      stacked_tissue(((j-1)*n_gene+1):j*n_gene) = tissue_type_unique(j);
-     stacked_genes(((j-1)*n_gene+1):j*n_gene, :) = gene;
+     stacked_genes(((j-1)*n_gene+1):j*n_gene) = gene_id;
 end
 for i = 1:numel(subj_id_unique)
-    datarows = Filtdata(:, strcmp(subj_id, subj_id_unique(i)));
+    datarows = expvalues(:, strcmp(subj_id, subj_id_unique(i)));
     for j = 1:3
         stacked_data(((j-1)*n_gene+1):j*n_gene, i) = ...
             datarows(:, j);
     end
 end
+
+%% filter data
+[mask,stacked_data] = genelowvalfilter(stacked_data,'absval',log2(2));
+stacked_genes = stacked_genes(mask, :);
+stacked_tissue = stacked_tissue(mask);
+[mask,stacked_data] = geneentropyfilter( ...
+   stacked_data,'Percentile',30);
+stacked_genes = stacked_genes(mask, :);
+stacked_tissue = stacked_tissue(mask);
+[h,p] = ttest(fildata');
+i_sigp = p<0.001;
+stacked_data = stacked_data(i_sigp,:);
+stacked_genes = stacked_genes(i_sigp, :);
+stacked_tissue = stacked_tissue(i_sigp);
+% i_nonan = sum(isnan(Filtdata), 1) == 0;
+% stacked_data = stacked_data(i_nonan,:);
+% stacked_genes = stacked_genes(i_nonan, :);
 
 %% k-means clustering
 opts = statset('Display','final');
@@ -172,12 +179,12 @@ Alz_age=age_unique(Alz_score);
 [n_feature,~]=size(stacked_genes);
 R_alz = zeros(n_feature, 1);
 R_norm = zeros(n_feature, 1);
-R_normage = zeros(n_feature, 1);
-R_alzage = zeros(n_feature, 1);
+R_age = zeros(n_feature, 1);
+% R_alzage = zeros(n_feature, 1);
 P_alz = zeros(n_feature, 1);
 P_norm = zeros(n_feature, 1);
-P_normage = zeros(n_feature, 1);
-P_alzage = zeros(n_feature, 1);
+P_age = zeros(n_feature, 1);
+% P_alzage = zeros(n_feature, 1);
 for i = 1:n_feature
     [R_alz_i, P_alz_i] = corrcoef(Alz_score', stacked_data(i, :));
     [R_norm_i, P_norm_i] = corrcoef(Norm_score', stacked_data(i, :));
@@ -192,10 +199,11 @@ end
 Age_sigp= P_age<0.001;
 Alz_sigp = P_alz<0.001;
 Norm_sigp = P_norm<0.001;
-Agerelated=find(Age_sigp' & Norm_sigp);
-Alzrelated=find(Age_sigp' & Alz_sigp);
+Agerelated=find(Age_sigp & Norm_sigp);
+Alzrelated=find(Age_sigp & Alz_sigp);
 genediff=setdiff(Alzrelated,Agerelated);
-Age_Alz_genes=stacked_genes((genediff),4);
+Age_Alz_genes_table = extract_gene_info(gene_table, stacked_genes(genediff));
+Age_Alz_genes=Age_Alz_genes_table(:, 4);
 Age_Alz_tissues = stacked_tissue(genediff);
 % Count the genes that belong to this set of ALZ but not age related by
 % brain region.
