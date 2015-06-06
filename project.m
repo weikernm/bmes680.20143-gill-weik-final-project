@@ -100,6 +100,11 @@ stacked_tissue = stacked_tissue(i_sigp);
 % stacked_data = stacked_data(i_nonan,:);
 % stacked_genes = stacked_genes(i_nonan, :);
 
+%% Check distribution of significantly regulated genes across tissues.
+n_sig_CR = nnz(strcmp(stacked_tissue, 'CR'));
+n_sig_PFC = nnz(strcmp(stacked_tissue, 'PFC'));
+n_sig_VC = nnz(strcmp(stacked_tissue, 'VC'));
+
 %% k-means clustering
 opts = statset('Display','final');
 [coeff, score, latent,~,explained,~]=pca(stacked_data');
