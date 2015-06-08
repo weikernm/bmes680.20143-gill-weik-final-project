@@ -55,7 +55,6 @@ subj_id_unique = unique(subj_id);
 
 %% Stack data
 gene_table = genes.Data;
-% [n_gene, n_genetypes] = size(gene);
 expvalues = gsedata.Data;
 gene_id = rownames(expvalues);
 n_gene = numel(gene_id);
@@ -81,10 +80,6 @@ end
 [mask,stacked_data] = genevarfilter(stacked_data,'Percentile',30);
 stacked_genes = stacked_genes(mask, :);
 stacked_tissue = stacked_tissue(mask);
-%[mask,stacked_data] = geneentropyfilter( ...
-%   stacked_data,'Percentile',30);
-%stacked_genes = stacked_genes(mask, :);
-%stacked_tissue = stacked_tissue(mask);
 for i = 1:length(subj_id_unique)
     unique_id(i) = str2num(cell2mat(subj_id_unique(i)));
 end
@@ -96,9 +91,6 @@ i_sigp = p<1e-6;
 stacked_data = stacked_data(i_sigp,:);
 stacked_genes = stacked_genes(i_sigp, :);
 stacked_tissue = stacked_tissue(i_sigp);
-% i_nonan = sum(isnan(Filtdata), 1) == 0;
-% stacked_data = stacked_data(i_nonan,:);
-% stacked_genes = stacked_genes(i_nonan, :);
 
 %% Check distribution of significantly regulated genes across tissues.
 n_sig_CR = nnz(strcmp(stacked_tissue, 'CR'));
@@ -189,8 +181,6 @@ for i = 1:n_feature
 end
 Alz_sigp = P_alz<1e-6;
 Norm_sigp = P_norm<1e-6;
-% Normrelated=find(Age_sigp & Norm_sigp);
-% Alzrelated=find(Age_sigp & Alz_sigp);
 genediff1=Alz_sigp & ~Norm_sigp;
 genediff2=Norm_sigp & ~Alz_sigp;
 Age_Alz_genes_table = extract_gene_info(gene_table, stacked_genes(genediff1));
@@ -209,16 +199,10 @@ n_age_norm_cr = nnz(strcmp(Age_Norm_tissues, 'CR'))
 n_age_norm_vc = nnz(strcmp(Age_Norm_tissues, 'VC'))
 %% Clustergram
 groups=double(disease_state);
-IDnode1=grps(str2double(Group10.ColumnNodeNames));
-IDnode2=grps(str2double(OtherGroup.ColumnNodeNames));
-Alzheimergroups1=strcmp(IDnode1,'Alzheimer''s disease');
-Alzheimergroups2=strcmp(IDnode2,'Alzheimer''s disease');
-NodeNames1=Group10.ColumnNodeNames(Alzheimergroups1==1);
-NodeNames2=OtherGroup.ColumnNodeNames(Alzheimergroups2==1);
-NodeNames=cat(2,NodeNames1,NodeNames2);
-cm=struct('GroupNumber',NodeNames,'Annotation',{'A'},'Color',{'y'});
-cgo_all = clustergram(stacked_data,'Standardize',1)
-set(cgo_all,'ColumnGroupMarker',cm)
+cgo_all = clustergram(stacked_data,'Standardize',1,'ColumnLabels',groups)
+CGobj3 = clusterGroup(cgo_all, 3, 1,'InfoOnly',true);
+CGobj36 = clusterGroup(cgo_all, 36, 1,'InfoOnly',true);
+CGObj1 = clusterGroup(cgo_all, 1, 1,'InfoOnly',true);
 addXLabel(cgo_all,'Disease State')
 addYLabel(cgo_all,'Gene Expression')
 
